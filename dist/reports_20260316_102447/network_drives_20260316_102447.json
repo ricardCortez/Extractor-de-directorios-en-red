@@ -1,0 +1,13 @@
+﻿{
+    "target_ip":  "192.168.1.199",
+    "timestamp":  "2026-03-16T10:24:50.9874168-05:00",
+    "total_drives":  1,
+    "drives":  [
+                   {
+                       "status":  "OK",
+                       "drive_letter":  "Z:",
+                       "matches_target":  true,
+                       "remote_path":  "\\\\192.168.1.199\\Data_General"
+                   }
+               ]
+}

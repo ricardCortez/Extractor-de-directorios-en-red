@@ -31,38 +31,58 @@ $OutputDir = $reportsDir
 
 function Get-NetworkDrivesNative {
     param([string]$TargetIP)
-    
+
     $drives = @()
-    
+
+    # Metodo principal: CIM/WMI - confiable y sin parseo de texto
+    try {
+        $mappedDrives = Get-CimInstance Win32_MappedLogicalDisk -ErrorAction Stop
+
+        foreach ($d in $mappedDrives) {
+            $letter = $d.DeviceID   # e.g. "Z:"
+            $remote = $d.ProviderName  # e.g. "\\192.168.1.199\share"
+            $matchesTarget = $remote -like "*$TargetIP*"
+
+            $drives += @{
+                DriveLetter  = $letter
+                RemotePath   = $remote
+                Status       = "OK"
+                MatchesTarget = $matchesTarget
+                TargetIP     = $TargetIP
+            }
+        }
+
+        return $drives
+    }
+    catch { }
+
+    # Fallback: parsear net use (columnas: Status  Local  Remote  Network)
     try {
         $output = & net use 2>$null
-        
+
         foreach ($line in $output) {
             $line = $line.Trim()
-            
             if ([string]::IsNullOrWhiteSpace($line)) { continue }
-            
-            if ($line -match '^(\S+)\s+(\S+)\s+(.+)$') {
-                $driveLetter = $matches[1]
-                $remotePath = $matches[2]
-                $status = $matches[3].Trim()
-                
-                if ($driveLetter -match '^[A-Z]:$' -and $remotePath -like '\\*') {
-                    $matchesTarget = $remotePath -like "*$TargetIP*"
-                    
-                    $drives += @{
-                        DriveLetter = $driveLetter
-                        RemotePath = $remotePath
-                        Status = $status
-                        MatchesTarget = $matchesTarget
-                        TargetIP = $TargetIP
-                    }
+
+            # Formato: OK  Z:  \\server\share  Microsoft Windows Network
+            if ($line -match '^(\S+)\s+([A-Z]:)\s+(\\\\[^\s]+)') {
+                $status     = $matches[1]
+                $letter     = $matches[2]
+                $remote     = $matches[3]
+                $matchesTarget = $remote -like "*$TargetIP*"
+
+                $drives += @{
+                    DriveLetter  = $letter
+                    RemotePath   = $remote
+                    Status       = $status
+                    MatchesTarget = $matchesTarget
+                    TargetIP     = $TargetIP
                 }
             }
         }
     }
     catch { }
-    
+
     return $drives
 }
 
