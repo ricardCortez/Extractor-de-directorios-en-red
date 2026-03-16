@@ -1,0 +1,60 @@
+# CORRECCIONES REALIZADAS
+
+## Problema identificado:
+El error "illegal characters in path" ocurría por caracteres especiales Unicode que ps2exe no puede procesar correctamente.
+
+## Cambios realizados:
+
+### 1. Extractor (extractor_native.ps1)
+**ANTES:**
+- Usaba caracteres Unicode: `✓` y `✗`
+- Usaba caracteres acentuados: `Sí` en CSV
+- Usaba cuadros especiales en los encabezados
+
+**AHORA:**
+- Solo usa ASCII: [OK], [ERROR]
+- CSV: "Si" en lugar de "Sí"
+- Sin caracteres especiales en textos
+
+### 2. Variables de Path
+**ANTES:**
+- `$OutputDir = (Get-Location).Path` - Dinámico y puede tener problemas
+- Paths complejos al usar Get-Location
+
+**AHORA:**
+- `$OutputDir = $PSScriptRoot` - Usa la carpeta donde está el script/exe
+- Más simple y compatible
+
+### 3. Encoding de archivos
+**ANTES:**
+- Usaba caracteres especiales en los datos exportados
+
+**AHORA:**
+- Solo ASCII en los separadores
+- UTF8 para datos (pero sin caracteres problemáticos)
+
+### 4. Compilador (compile_ps2exe.ps1)
+**ANTES:**
+- Tenía caracteres especiales en mensajes de salida
+
+**AHORA:**
+- Solo ASCII en todos los mensajes
+- Compilador simplificado
+
+## Resultado:
+✓ Sin caracteres especiales Unicode
+✓ Compatible con ps2exe
+✓ .exe ejecutable sin errores de path
+
+## Instalación limpia de archivos:
+
+Descarga estos 2 archivos NUEVOS:
+1. compile_ps2exe.ps1 (compilador)
+2. extractor_native.ps1 (código a compilar)
+
+Luego ejecuta:
+```
+powershell -ExecutionPolicy Bypass -File compile_ps2exe.ps1
+```
+
+Listo.

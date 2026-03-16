@@ -1,0 +1,89 @@
+# COMPILACIÓN CON ps2exe - GUÍA RÁPIDA
+
+## ARCHIVOS NECESARIOS
+
+Estos 2 archivos son suficientes:
+1. ✓ `compile_ps2exe.ps1` - Compilador automático
+2. ✓ `extractor_native.ps1` - Código a compilar
+
+---
+
+## COMANDO (Copia y pega)
+
+```powershell
+powershell -ExecutionPolicy Bypass -File compile_ps2exe.ps1
+```
+
+---
+
+## PASOS
+
+### 1. Descarga los 2 archivos
+```
+compile_ps2exe.ps1
+extractor_native.ps1
+```
+
+### 2. Coloca ambos en la MISMA carpeta
+
+### 3. Abre PowerShell en esa carpeta
+- Opción A: Shift + Click derecho → "Abrir PowerShell aquí"
+- Opción B: `cd C:\ruta\a\carpeta`
+
+### 4. Ejecuta el comando
+```powershell
+powershell -ExecutionPolicy Bypass -File compile_ps2exe.ps1
+```
+
+### 5. Espera ~20 segundos
+El script:
+- ✓ Instala ps2exe si falta
+- ✓ Compila el código
+- ✓ Genera `dist\NetworkDriveExtractor.exe`
+
+### 6. Usa el .exe
+```powershell
+.\dist\NetworkDriveExtractor.exe
+```
+
+---
+
+## RESULTADO ESPERADO
+
+```
+dist/NetworkDriveExtractor.exe  (≈15 MB)
+```
+
+Sin dependencias, solo PowerShell (incluido en Windows 10+)
+
+---
+
+## SI ALGO FALLA
+
+### Error: "ps2exe: El término no se reconoce"
+```powershell
+# Ejecuta como ADMINISTRADOR e intenta de nuevo
+# O instala manualmente:
+Install-Module ps2exe -Force
+```
+
+### Error: "No se puede cargar el archivo compile_ps2exe.ps1"
+```powershell
+# Asegúrate de estar en la carpeta correcta:
+cd "C:\ruta\exacta"
+powershell -ExecutionPolicy Bypass -File .\compile_ps2exe.ps1
+```
+
+### El .exe no abre
+```powershell
+# Ejecuta desde PowerShell para ver el error:
+.\dist\NetworkDriveExtractor.exe
+```
+
+---
+
+## ESO ES
+
+Una línea, dos archivos, ~20 segundos.
+
+Listo para distribuir a otros PCs.
